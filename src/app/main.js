@@ -262,9 +262,12 @@ appEl.addEventListener('change', (e) => {
   render();
 });
 
-/* offline play: sw.js keeps a copy of the app. Only where service workers exist and the page is served securely. */
-if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost'))
-  navigator.serviceWorker.register('./sw.js').catch(() => {});
+/* offline play: sw.js keeps a copy of the app. Only where service workers exist and the page is served securely.
+   Inside a sandboxed frame even asking for the service worker can throw, and the app must still start. */
+try {
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost'))
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+} catch (e) {}
 
 (async () => {
   render();
